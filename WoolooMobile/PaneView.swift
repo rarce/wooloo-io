@@ -3,9 +3,8 @@ import WoolooCore
 import SwiftTerm
 
 @MainActor @Observable final class TerminalModel {
-    var message = "Choose Watch or Control to open the terminal."
+    var message = "Opening terminal…"
     var connected = false
-    var readOnly = true
     var cols = 80
     var rows = 24
     var render: ((Data, Int?, Int?) -> Void)?
@@ -13,14 +12,13 @@ import SwiftTerm
     private var continuation: AsyncStream<Data>.Continuation?
     private var lastSequence: Int?
     private var generation = UUID()
-    func open(client: HerdrClient?, pane: String, demo: Bool, observe: Bool, takeover: Bool = false) {
+    func open(client: HerdrClient?, pane: String, demo: Bool, takeover: Bool = false) {
         stop()
         lastSequence = nil
         let token = generation
-        readOnly = observe
         if demo {
             connected = true
-            message = "Local demo · \(observe ? "watching" : "simulated control")"
+            message = "Local demo · simulated control"
             render?(Data("\u{1b}[2J\u{1b}[H\u{1b}[36mWooloo Mobile · demo\u{1b}[0m\r\n\r\nClaude Code  •  api\r\n\r\nMigration is ready for review.\r\n\r\n  1. Approve migration\r\n  2. Explain the changes\r\n  3. Cancel\r\n\r\nThis terminal runs locally. No commands reach a server.\r\n".utf8), nil, nil)
             return
         }
@@ -30,7 +28,7 @@ import SwiftTerm
         message = "Opening terminal…"
         task = Task {
             do {
-                try await client.terminal(pane: pane, cols: cols, rows: rows, observe: observe, takeover: takeover, commands: pair.stream) { [weak self] frame in
+                try await client.terminal(pane: pane, cols: cols, rows: rows, observe: false, takeover: takeover, commands: pair.stream) { [weak self] frame in
                     let bytes = try frame.validatedBytes()
                     try await self?.receive(frame, data: bytes, token: token)
                 }
@@ -46,11 +44,11 @@ import SwiftTerm
         if let seq = frame.seq, let previous = lastSequence, seq <= previous { throw WoolooError.message("Terminal frames arrived out of order. Reopen the terminal.") }
         lastSequence = frame.seq
         connected = true
-        message = readOnly ? "Watch only" : "You have control"
+        message = "You have control"
         render?(data, frame.width, frame.height)
     }
     func send(_ object: [String: Any]) {
-        guard connected, !readOnly, let continuation else { return }
+        guard connected, let continuation else { return }
         do {
             let data = try JSONSerialization.data(withJSONObject: object)
             guard data.count <= 65_536 else { throw WoolooError.message("Input is too large. Send a smaller chunk.") }
@@ -64,7 +62,7 @@ import SwiftTerm
     }
     func stop() {
         generation = UUID()
-        if !readOnly, let continuation {
+        if let continuation {
             if let release = try? JSONSerialization.data(withJSONObject: ["type": "terminal.release"]) { continuation.yield(release) }
         }
         continuation?.finish(); continuation = nil
@@ -128,25 +126,18 @@ struct PaneView: View {
                 Spacer()
                 Text(app.demo ? "LOCAL DEMO" : app.state).font(.caption2).foregroundStyle(.secondary)
             }.padding(.horizontal).padding(.vertical, 8)
-            TerminalSurface(model: terminal).accessibilityLabel("Terminal for \(pane.displayTitle)")
+            TerminalSurface(model: terminal)
+                .accessibilityLabel("Terminal for \(pane.displayTitle)")
+                .onAppear { openTerminal() }
             VStack(alignment: .leading, spacing: 10) {
                 Text(terminal.message).font(.caption).foregroundStyle(terminal.connected ? Color.secondary : Color.orange).lineLimit(4).textSelection(.enabled)
-                HStack {
-                    Button("Watch") { terminal.open(client: app.client, pane: pane.id, demo: app.demo, observe: true) }
-                    Button("Control") { terminal.open(client: app.client, pane: pane.id, demo: app.demo, observe: false) }
-                    Spacer()
-                    Menu {
-                        Button("Take control from another client", role: .destructive) { takeover = true }
-                        Button("Release control") { terminal.stop() }
-                    } label: { Image(systemName: "ellipsis.circle") }
-                }.buttonStyle(.bordered)
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach([("esc", "\u{1b}"), ("tab", "\t"), ("⇧tab", "\u{1b}[Z"), ("^C", "\u{3}"), ("↑", "\u{1b}[A"), ("↓", "\u{1b}[B"), ("←", "\u{1b}[D"), ("→", "\u{1b}[C"), ("enter", "\r"), ("1", "1"), ("2", "2"), ("3", "3"), ("y", "y"), ("n", "n")], id: \.0) { key in
                             Button(key.0) {
                                 if app.demo { terminal.render?(Data("\r\nDemo input: \(key.0)\r\n".utf8), nil, nil) }
                                 else { terminal.input(Data(key.1.utf8)) }
-                            }.buttonStyle(.bordered).disabled(!terminal.connected || terminal.readOnly)
+                            }.buttonStyle(.bordered).disabled(!terminal.connected)
                         }
                     }
                 }
@@ -171,6 +162,11 @@ struct PaneView: View {
         .navigationTitle(pane.displayAgent ?? pane.agent ?? "Terminal").navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Menu {
+                if !terminal.connected {
+                    Button("Reconnect terminal") { openTerminal() }
+                }
+                Button("Take control from another client", role: .destructive) { takeover = true }
+                Divider()
                 Button("Split right") { Task { await app.action("pane.split", params: ["target_pane_id": pane.id, "direction": "right"]) } }
                 Button("Split down") { Task { await app.action("pane.split", params: ["target_pane_id": pane.id, "direction": "down"]) } }
                 Button("Toggle zoom") { Task { await app.action("pane.zoom", params: ["pane_id": pane.id, "mode": "toggle"]) } }
@@ -178,12 +174,22 @@ struct PaneView: View {
             } label: { Image(systemName: "rectangle.split.2x1") }.disabled(app.demo || app.client == nil)
         }
         .onDisappear { terminal.stop() }
-        .onChange(of: phase) { _, value in if value != .active { terminal.stop() } }
+        .onChange(of: phase) { _, value in
+            if value == .active { openTerminal() } else { terminal.stop() }
+        }
+        .onChange(of: app.client.map { ObjectIdentifier($0) }) { _, _ in
+            guard phase == .active else { return }
+            openTerminal()
+        }
         .confirmationDialog("Take control from the current client?", isPresented: $takeover, titleVisibility: .visible) {
-            Button("Take control", role: .destructive) { terminal.open(client: app.client, pane: pane.id, demo: app.demo, observe: false, takeover: true) }
+            Button("Take control", role: .destructive) { openTerminal(takeover: true) }
         }
         .confirmationDialog("Close this pane and its running process?", isPresented: $closePane, titleVisibility: .visible) {
             Button("Close pane", role: .destructive) { terminal.stop(); Task { await app.action("pane.close", params: ["pane_id": pane.id]) } }
         }
     }
+    private func openTerminal(takeover: Bool = false) {
+        terminal.open(client: app.client, pane: pane.id, demo: app.demo, takeover: takeover)
+    }
+
 }

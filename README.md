@@ -23,8 +23,8 @@ The app's display name is **Wooloo Mobile**, matching the Android app.
   camera QR scanning and QR images. Imports fill an editor and never auto-connect.
 - Herdr snapshots, event invalidation, space/tab creation, space rename/close,
   pane split/zoom/close and multiline agent prompts.
-- SwiftTerm terminal rendering, native keyboard input, extra keys, explicit
-  watch/control/takeover, release, resize and bounded NDJSON records.
+- SwiftTerm terminal rendering, native keyboard input, extra keys, automatic control on opening, explicit
+  takeover, release on leaving, resize and bounded NDJSON records.
 - Local agent state notifications while connected, with tap-to-open navigation.
 - Offline third-party notices, privacy disclosure and iOS privacy manifest.
 
@@ -76,9 +76,9 @@ and the Xcode workspace lockfile; the patched Citadel library is vendored at a d
 5. Save the reviewed profile and open the machine. If no fingerprint was supplied,
    connection stops and displays one: independently verify it, then edit the
    machine and add the approved `SHA256:…` fingerprint before retrying.
-6. Open a space/pane. **Watch** is read-only; **Control** asks for ordinary control.
-   If another client owns the terminal, use the separate, confirmed **Take control**
-   action. Reconnection never steals control automatically.
+6. Open a space/pane. The terminal requests control automatically; there is no
+   watch/control selector. If another client owns it, use the menu's confirmed
+   **Take control** action. Reconnection never steals control automatically.
 
 Direct SSH requires a reachable address or VPN. QR import does not establish a
 network route or grant SSH access. Quick tunnel hostnames can change on restart.

@@ -62,7 +62,7 @@ CI runs the normal tests and simulator build in an unrestricted macOS runner.
 - Release simulator and Debug/Release device builds, visual checks on compact
   iPhone and iPad, rotation, accessibility and hardware/software keyboards.
 - Direct SSH against an isolated real Herdr session: snapshot/events, every remote
-  action, terminal frames/input, watch/control/takeover, release, timeout/cancel,
+  action, terminal frames/input, automatic control/confirmed takeover, release, timeout/cancel,
   resize, session closure and reconnection.
 - Cloudflare quick tunnel and named/Access tunnel: valid/invalid tokens, TLS and
   redirect refusal, network loss, backpressure, clean shutdown and foreground return.
@@ -79,3 +79,15 @@ Debug now sets `ONLY_ACTIVE_ARCH = YES` in the deterministic project generator.
 Rebuilding through Xcode successfully launched Wooloo Mobile on iPhone 17 with
 iOS 26.5. The demo spaces screen was left open for manual review. Full navigation,
 terminal/keyboard, accessibility and real-server QA remain pending.
+
+## Default terminal control
+
+Removed the Watch/Control selector. Opening a pane requests ordinary control
+automatically, including after foreground/SSH recovery. Taking control from another
+client still requires the explicit confirmation. The terminal releases control on
+leaving; reconnect is available from its menu after a failure.
+
+Validated with the iOS typecheck helper and a native Xcode rebuild/run on iPhone 17
+(iOS 26.5). Entering the demo pane immediately rendered its terminal with enabled
+extra keys and no mode selector. Real-server ownership conflict validation remains
+pending.
