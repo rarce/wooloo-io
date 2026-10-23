@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: Protocol and isolated SSH tests
+        run: swift test
+      - name: Check project generation
+        run: |
+          python3 scripts/generate-project.py
+          git diff --exit-code -- WoolooMobile.xcodeproj
+      - name: Build iOS simulator
+        run: >-
+          xcodebuild -project WoolooMobile.xcodeproj -scheme WoolooMobile
+          -configuration Debug -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO build

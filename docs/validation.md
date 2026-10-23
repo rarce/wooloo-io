@@ -1,0 +1,63 @@
+# Validation record
+
+Environment: Xcode 26.6, Swift 6.3.3, macOS host, iOS 26.5 SDK, iOS 17 deployment.
+
+## Executed
+
+- SwiftPM core build for macOS.
+- SwiftPM cross-compilation of the complete core/dependency graph, including
+  SwiftTerm, for `arm64-apple-ios17.0-simulator`.
+- 12 passing tests: snapshot order/geometry, unknown statuses, QR/link fingerprints
+  and duplicate/malformed fields, transport preservation, split UTF-8 NDJSON,
+  complete/incomplete oversized records, frame dimensions/base64, shell argument
+  quoting, credential-free profile JSON; plus an actual NIOSSH handshake and
+  bidirectional Citadel exec over an isolated local Unix socket pair, and unknown
+  server identity rejection.
+- SwiftUI/UIKit app typecheck against the iOS SDK and native executable link.
+  `vtool` confirms platform IOSSIMULATOR, minimum iOS 17.0, SDK 26.5. This checks
+  compilation and dependency linkage, not app-bundle resources or runtime behavior.
+- Project/plist syntax validation using `plutil`.
+
+The SSH fixture generates an ephemeral server key and uses a dummy password in
+memory. It opens no TCP port, changes no `authorized_keys`, and touches no existing
+Herdr session or user SSH configuration. It is a real SSH protocol test, with a
+small fake Herdr response on the exec channel; it is not a real Herdr server test.
+
+## Environment restrictions and alternate checks
+
+This managed execution environment denies CoreSimulator service access and Xcode's
+nested package-manifest sandbox. Consequently the ordinary full `xcodebuild` and
+simulator launch could not be completed here. Compilation caches were redirected
+to disposable `/private/tmp` directories. GitHub dependency mirrors under that
+same temporary directory were used because SwiftPM's child network access is
+restricted. Those local mirror settings are ignored and are not shipped.
+
+The app can be typechecked independently of CoreSimulator using:
+
+```sh
+swift build --scratch-path /private/tmp/wooloo-ios-spm \
+  --triple arm64-apple-ios17.0-simulator \
+  --sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)"
+python3 scripts/typecheck-ios.py /private/tmp/wooloo-ios-spm
+# Optional executable link check (not a distributable .app bundle):
+python3 scripts/typecheck-ios.py /private/tmp/wooloo-ios-spm /private/tmp/WoolooMobile-simulator
+```
+
+The helper disables the compiler's nested subprocess sandbox only; the outer
+workspace sandbox remains in effect. This alternate check is not a replacement
+for a full Xcode build, simulator screenshots, on-device tests or a signed archive.
+CI runs the normal tests and simulator build in an unrestricted macOS runner.
+
+## Release gates still required
+
+- Full Xcode Debug and Release simulator/device builds, visual checks on compact
+  iPhone and iPad, rotation, accessibility and hardware/software keyboards.
+- Direct SSH against an isolated real Herdr session: snapshot/events, every remote
+  action, terminal frames/input, watch/control/takeover, release, timeout/cancel,
+  resize, session closure and reconnection.
+- Cloudflare quick tunnel and named/Access tunnel: valid/invalid tokens, TLS and
+  redirect refusal, network loss, backpressure, clean shutdown and foreground return.
+- Keychain on a real unlocked/locked device, key generation/import, profile edits,
+  credential clearing, QR camera/photo and notification routing.
+- Review privacy manifest, App Store metadata and export compliance; choose a
+  signing team only when available. No App Store upload is attempted by this repo.
