@@ -29,12 +29,12 @@ struct MachineEditor: View {
                 }
                 Section("Machine") {
                     Picker("Connection", selection: $machine.transport) { Text("Direct SSH").tag("ssh"); Text("Cloudflare Tunnel").tag("cloudflare") }
-                    TextField("Name", text: $machine.name)
-                    TextField("Hostname", text: $machine.host).textInputAutocapitalization(.never).autocorrectionDisabled()
-                    TextField("SSH username", text: $machine.user).textInputAutocapitalization(.never).autocorrectionDisabled()
+                    LabeledContent("Name") { TextField("My Mac", text: $machine.name).multilineTextAlignment(.trailing) }
+                    LabeledContent("Hostname") { TextField("mac.example.com", text: $machine.host).multilineTextAlignment(.trailing) }.textInputAutocapitalization(.never).autocorrectionDisabled()
+                    LabeledContent("SSH username") { TextField("roberto", text: $machine.user).multilineTextAlignment(.trailing) }.textInputAutocapitalization(.never).autocorrectionDisabled()
                     LabeledContent("Port") { TextField("22", value: $machine.port, format: .number).keyboardType(.numberPad).multilineTextAlignment(.trailing) }
-                    TextField("Herdr session", text: $machine.session).textInputAutocapitalization(.never).autocorrectionDisabled()
-                    TextField("Herdr path (optional)", text: $machine.herdrPath).textInputAutocapitalization(.never).autocorrectionDisabled()
+                    LabeledContent("Herdr session") { TextField("wooloo", text: $machine.session).multilineTextAlignment(.trailing) }.textInputAutocapitalization(.never).autocorrectionDisabled()
+                    LabeledContent("Herdr path (optional)") { TextField("Automatic", text: $machine.herdrPath).multilineTextAlignment(.trailing) }.textInputAutocapitalization(.never).autocorrectionDisabled()
                 }
                 Section {
                     SecureField("Password (empty uses device SSH key)", text: $password)

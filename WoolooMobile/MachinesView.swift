@@ -25,10 +25,9 @@ struct MachinesView: View {
             List {
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("YOUR AGENTS. ANYWHERE.").font(.caption.weight(.semibold)).tracking(2).foregroundStyle(.mint)
-                        Text("Pick up where\nyou left off.").font(.largeTitle.bold())
-                        Text("Your spaces and coding agents, connected directly to your machines.").foregroundStyle(.secondary)
-                    }.padding(.vertical, 16).listRowBackground(Color.clear)
+                        Text("Your agents, wherever you are.").font(.title2.bold())
+                        Text("Connect to a machine to continue your work.").foregroundStyle(.secondary)
+                    }.padding(.vertical, 4).listRowBackground(Color.clear)
                 }
                 Section("Machines") {
                     if model.machines.isEmpty {
@@ -58,7 +57,7 @@ struct MachinesView: View {
                 }
                 Section {
                     Button { model.showDemo(); openSession = true } label: {
-                        HStack { Label("Try the demo machine", systemImage: "play.rectangle"); Spacer(); Text("OFFLINE").font(.caption2).foregroundStyle(.secondary) }
+                        HStack { Label("Try the demo machine", systemImage: "play.rectangle"); Spacer(); Text("Local").font(.caption2).foregroundStyle(.secondary) }
                     }
                 } footer: { Text("No Wooloo account. Your credentials stay on this device.") }
             }

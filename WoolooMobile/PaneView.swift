@@ -131,7 +131,13 @@ struct PaneView: View {
                 .onAppear { openTerminal() }
             VStack(alignment: .leading, spacing: 10) {
                 Text(terminal.message).font(.caption).foregroundStyle(terminal.connected ? Color.secondary : Color.orange).lineLimit(4).textSelection(.enabled)
-                ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 4) {
+                    Text("Terminal keys")
+                    Spacer()
+                    Text("Swipe for more")
+                    Image(systemName: "arrow.left.and.right")
+                }.font(.caption2).foregroundStyle(.secondary)
+                ScrollView(.horizontal, showsIndicators: true) {
                     HStack {
                         ForEach([("esc", "\u{1b}"), ("tab", "\t"), ("⇧tab", "\u{1b}[Z"), ("^C", "\u{3}"), ("↑", "\u{1b}[A"), ("↓", "\u{1b}[B"), ("←", "\u{1b}[D"), ("→", "\u{1b}[C"), ("enter", "\r"), ("1", "1"), ("2", "2"), ("3", "3"), ("y", "y"), ("n", "n")], id: \.0) { key in
                             Button(key.0) {
@@ -139,7 +145,7 @@ struct PaneView: View {
                                 else { terminal.input(Data(key.1.utf8)) }
                             }.buttonStyle(.bordered).disabled(!terminal.connected)
                         }
-                    }
+                    }.padding(.bottom, 4)
                 }
                 HStack(alignment: .bottom) {
                     TextField("Message your agent…", text: $prompt, axis: .vertical).lineLimit(1...5).textFieldStyle(.roundedBorder)

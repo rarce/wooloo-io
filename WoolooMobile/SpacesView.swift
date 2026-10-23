@@ -27,7 +27,7 @@ struct SpacesView: View {
                                     Image(systemName: "square.stack.3d.up").foregroundStyle((workspace.agentStatus ?? .unknown).color).font(.title2)
                                     VStack(alignment: .leading, spacing: 6) {
                                         Text(workspace.label.isEmpty ? workspace.id : workspace.label).font(.headline)
-                                        Text("\(snapshot.panes(in: workspace.id).count) panes").font(.caption).foregroundStyle(.secondary)
+                                        Text("\(snapshot.panes(in: workspace.id).count) \(snapshot.panes(in: workspace.id).count == 1 ? "pane" : "panes")").font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer()
                                     StateBadge(state: workspace.agentStatus ?? .unknown)
@@ -100,7 +100,7 @@ struct SpaceView: View {
                                 VStack(alignment: .leading, spacing: 6) {
                                     HStack { Text(pane.displayAgent ?? pane.agent ?? "Terminal").font(.headline); Spacer(); StateBadge(state: pane.agentStatus ?? .unknown) }
                                     Text(pane.displayTitle).font(.subheadline).foregroundStyle(.secondary)
-                                    if let cwd = pane.cwd { Text(cwd).font(.system(.caption, design: .monospaced)).foregroundStyle(.tertiary) }
+                                    if let cwd = pane.cwd { Text(cwd).font(.system(.caption, design: .monospaced)).foregroundStyle(.secondary) }
                                 }
                             }.padding(.vertical, 8)
                         }
@@ -109,9 +109,6 @@ struct SpaceView: View {
                 ForEach(snapshot.tabs.filter { $0.workspaceId == workspaceID }) { tab in
                     Section(tab.label.isEmpty ? "Tab" : tab.label) {
                         if let layout = snapshot.layouts?.first(where: { $0.tabId == tab.id }) { LayoutMiniature(layout: layout, panes: snapshot.panes).frame(height: 80).padding(.vertical, 8) }
-                        ForEach(snapshot.panes.filter { $0.tabId == tab.id }) { pane in
-                            NavigationLink(pane.displayTitle) { PaneView(pane: pane) }.font(.caption)
-                        }
                     }
                 }
             }
