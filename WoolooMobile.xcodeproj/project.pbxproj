@@ -1,0 +1,45 @@
+// !$*UTF8*$!
+{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
+5109B6F55687E2D2A074D881 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AgentNotifications.swift"; sourceTree = "<group>"; };
+F11FBA12785BB13C23AB6B0B = { isa = PBXBuildFile; fileRef = 5109B6F55687E2D2A074D881; };
+4AE4A885EF26CC9F4DA548B8 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel.swift"; sourceTree = "<group>"; };
+3B1BD0D3E3B196288B17828C = { isa = PBXBuildFile; fileRef = 4AE4A885EF26CC9F4DA548B8; };
+D52367957937BEA0A4A65E5B = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MachineEditor.swift"; sourceTree = "<group>"; };
+88F58285469F02C476E4B534 = { isa = PBXBuildFile; fileRef = D52367957937BEA0A4A65E5B; };
+2C57906DC8E9ED8229DE0196 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MachinesView.swift"; sourceTree = "<group>"; };
+BAFE1E8C068A5671AF8BBF03 = { isa = PBXBuildFile; fileRef = 2C57906DC8E9ED8229DE0196; };
+E530053C3E358869A2F60CD2 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PaneView.swift"; sourceTree = "<group>"; };
+71C6EB115BBAFEFCFDD30B13 = { isa = PBXBuildFile; fileRef = E530053C3E358869A2F60CD2; };
+532970FB28D7EA0D4BB0576D = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QRImportView.swift"; sourceTree = "<group>"; };
+567083CB33EF9A93644AE198 = { isa = PBXBuildFile; fileRef = 532970FB28D7EA0D4BB0576D; };
+EEDE96C56CBAC202420A47BC = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
+289C8D3C22097DA2A314830F = { isa = PBXBuildFile; fileRef = EEDE96C56CBAC202420A47BC; };
+B2DCCEA3D71BADCA83142675 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpacesView.swift"; sourceTree = "<group>"; };
+AE202A62BC1EBC1616A8BEFE = { isa = PBXBuildFile; fileRef = B2DCCEA3D71BADCA83142675; };
+5220010465B17C83D5ED67DF = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WoolooMobileApp.swift"; sourceTree = "<group>"; };
+636D0869FE5167952459DFDE = { isa = PBXBuildFile; fileRef = 5220010465B17C83D5ED67DF; };
+51586EC659573475D91CFF77 = { isa = PBXFileReference; lastKnownFileType = text; path = ThirdPartyNotices.txt; sourceTree = "<group>"; };
+8BBFE54AB5FA850A836E88DB = { isa = PBXBuildFile; fileRef = 51586EC659573475D91CFF77; };
+3685E330EC5277A9DD5661C6 = { isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+8EFD5743999F168D176AB696 = { isa = PBXBuildFile; fileRef = 3685E330EC5277A9DD5661C6; };
+96ED5C5789B174A01557791C = { isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+85BDCB459FD50CE03EAEA96F = { isa = PBXBuildFile; fileRef = 96ED5C5789B174A01557791C; };
+38A007151ABE87CC01A5B6E9 = { isa = PBXFileReference; explicitFileType = wrapper.application; path = "Wooloo Mobile.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+325F10A6957A34D66CB8C0E4 = { isa = PBXGroup; children = (3A2A88DEEFF3D1D23E496597, FBDC4F23F93125BBEEAE800C); sourceTree = "<group>"; };
+3A2A88DEEFF3D1D23E496597 = { isa = PBXGroup; path = WoolooMobile; sourceTree = "<group>"; children = (5109B6F55687E2D2A074D881, 4AE4A885EF26CC9F4DA548B8, D52367957937BEA0A4A65E5B, 2C57906DC8E9ED8229DE0196, E530053C3E358869A2F60CD2, 532970FB28D7EA0D4BB0576D, EEDE96C56CBAC202420A47BC, B2DCCEA3D71BADCA83142675, 5220010465B17C83D5ED67DF, 3685E330EC5277A9DD5661C6, 96ED5C5789B174A01557791C, 51586EC659573475D91CFF77); };
+FBDC4F23F93125BBEEAE800C = { isa = PBXGroup; name = Products; children = (38A007151ABE87CC01A5B6E9); sourceTree = "<group>"; };
+BCE16DD0260827ECF338C787 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (F11FBA12785BB13C23AB6B0B, 3B1BD0D3E3B196288B17828C, 88F58285469F02C476E4B534, BAFE1E8C068A5671AF8BBF03, 71C6EB115BBAFEFCFDD30B13, 567083CB33EF9A93644AE198, 289C8D3C22097DA2A314830F, AE202A62BC1EBC1616A8BEFE, 636D0869FE5167952459DFDE); runOnlyForDeploymentPostprocessing = 0; };
+0189424A5A60FED329FA868E = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (8EFD5743999F168D176AB696, 85BDCB459FD50CE03EAEA96F, 8BBFE54AB5FA850A836E88DB); runOnlyForDeploymentPostprocessing = 0; };
+7561BFB015D8F536760CB671 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (9E2F6A7C32D963F400D44FCA); runOnlyForDeploymentPostprocessing = 0; };
+9E2F6A7C32D963F400D44FCA = { isa = PBXBuildFile; productRef = 94A0426E8D3203DA5468CCF0; };
+94A0426E8D3203DA5468CCF0 = { isa = XCSwiftPackageProductDependency; productName = WoolooCore; };
+8F5B626E483F79FC4BC78D05 = { isa = XCLocalSwiftPackageReference; relativePath = .; };
+D08DD63EED508AD30D0CB0B4 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { CLANG_ENABLE_MODULES = YES; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 5.0; }; };
+E9B2E96ABC5F6856F2BE79CF = { isa = XCBuildConfiguration; name = Debug; buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = WoolooMobile/Info.plist; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = dev.wooloo.mobile.ios; PRODUCT_NAME = "Wooloo Mobile"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; DEBUG_INFORMATION_FORMAT = dwarf; }; };
+811CB99F7A296F7846C18A7F = { isa = XCBuildConfiguration; name = Release; buildSettings = { CLANG_ENABLE_MODULES = YES; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 5.0; }; };
+5A8C91857F674E16E2724F47 = { isa = XCBuildConfiguration; name = Release; buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = WoolooMobile/Info.plist; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = dev.wooloo.mobile.ios; PRODUCT_NAME = "Wooloo Mobile"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_OPTIMIZATION_LEVEL = "-O"; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; }; };
+C81BE6FD63C7E0B780E1FA69 = { isa = XCConfigurationList; buildConfigurations = (D08DD63EED508AD30D0CB0B4, 811CB99F7A296F7846C18A7F); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+F37922C48DA5978D02C9E50E = { isa = XCConfigurationList; buildConfigurations = (E9B2E96ABC5F6856F2BE79CF, 5A8C91857F674E16E2724F47); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+0E8A3AD980EC179856012B7E = { isa = PBXNativeTarget; buildConfigurationList = F37922C48DA5978D02C9E50E; buildPhases = (BCE16DD0260827ECF338C787, 7561BFB015D8F536760CB671, 0189424A5A60FED329FA868E); buildRules = (); dependencies = (); name = WoolooMobile; packageProductDependencies = (94A0426E8D3203DA5468CCF0); productName = WoolooMobile; productReference = 38A007151ABE87CC01A5B6E9; productType = "com.apple.product-type.application"; };
+98F54143AB4E86B28C3AFEE0 = { isa = PBXProject; attributes = { LastUpgradeCheck = 2660; }; buildConfigurationList = C81BE6FD63C7E0B780E1FA69; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = 325F10A6957A34D66CB8C0E4; packageReferences = (8F5B626E483F79FC4BC78D05); productRefGroup = FBDC4F23F93125BBEEAE800C; projectDirPath = ""; projectRoot = ""; targets = (0E8A3AD980EC179856012B7E); };
+}; rootObject = 98F54143AB4E86B28C3AFEE0; }
