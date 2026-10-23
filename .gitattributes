@@ -1,0 +1,3 @@
+# Preserve upstream source and license formatting verbatim.
+Vendor/** -whitespace
+WoolooMobile/ThirdPartyNotices.txt -whitespace
