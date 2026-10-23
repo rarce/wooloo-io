@@ -73,13 +73,104 @@ import SwiftTerm
     }
 }
 
+/// Keeps terminal shortcuts in one row while retaining the system keyboard.
+final class CompactTerminalView: TerminalView {
+    var controlArmed = false {
+        didSet { compactKeys?.updateControl(controlArmed) }
+    }
+    private var compactKeys: CompactTerminalKeys?
+
+    func installCompactKeys() {
+        let keys = CompactTerminalKeys(terminal: self)
+        compactKeys = keys
+        inputAccessoryView = keys
+    }
+
+    func sendArrow(_ suffix: String) {
+        let prefix = getTerminal().applicationCursor ? "\u{1b}O" : "\u{1b}["
+        send(Array((prefix + suffix).utf8))
+    }
+
+    override func insertText(_ text: String) {
+        if controlArmed {
+            controlArmed = false
+            if let byte = text.utf8.first, text.utf8.count == 1, (64...127).contains(byte) {
+                send([byte & 0x1f])
+                return
+            }
+        }
+        super.insertText(text)
+    }
+}
+
+final class CompactTerminalKeys: UIInputView {
+    private weak var terminal: CompactTerminalView?
+    private let control = UIButton(type: .system)
+
+    init(terminal: CompactTerminalView) {
+        self.terminal = terminal
+        super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 44), inputViewStyle: .keyboard)
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.distribution = .fillEqually
+        stack.spacing = 2
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 4),
+            stack.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -4),
+            stack.topAnchor.constraint(equalTo: topAnchor),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+        func key(_ title: String, label: String? = nil, action: @escaping () -> Void) -> UIButton {
+            let button = UIButton(type: .system)
+            button.setTitle(title, for: .normal)
+            button.titleLabel?.font = .systemFont(ofSize: 13, weight: .medium)
+            button.accessibilityLabel = label ?? title
+            button.addAction(UIAction { _ in action() }, for: .touchUpInside)
+            return button
+        }
+        stack.addArrangedSubview(key("Esc", label: "Escape") { [weak terminal] in terminal?.send([0x1b]) })
+        stack.addArrangedSubview(key("Tab") { [weak terminal] in terminal?.send([0x09]) })
+        control.setTitle("Ctrl", for: .normal)
+        control.titleLabel?.font = .systemFont(ofSize: 13, weight: .medium)
+        control.accessibilityLabel = "Control next character"
+        control.addAction(UIAction { [weak terminal] _ in terminal?.controlArmed.toggle() }, for: .touchUpInside)
+        stack.addArrangedSubview(control)
+        stack.addArrangedSubview(key("←", label: "Left arrow") { [weak terminal] in terminal?.sendArrow("D") })
+        stack.addArrangedSubview(key("↑", label: "Up arrow") { [weak terminal] in terminal?.sendArrow("A") })
+        stack.addArrangedSubview(key("↓", label: "Down arrow") { [weak terminal] in terminal?.sendArrow("B") })
+        stack.addArrangedSubview(key("→", label: "Right arrow") { [weak terminal] in terminal?.sendArrow("C") })
+        let more = key("⋯", label: "More terminal keys") {}
+        more.showsMenuAsPrimaryAction = true
+        var actions = [("~", "~"), ("|", "|"), ("/", "/"), ("-", "-"), ("Shift-Tab", "\u{1b}[Z"), ("Ctrl-C", "\u{3}"), ("Enter", "\r")].map { title, value in
+            UIAction(title: title) { [weak terminal] _ in terminal?.send(Array(value.utf8)) }
+        }
+        actions.append(UIAction(title: "Hide keyboard", image: UIImage(systemName: "keyboard.chevron.compact.down")) { [weak terminal] _ in
+            terminal?.controlArmed = false
+            _ = terminal?.resignFirstResponder()
+        })
+        more.menu = UIMenu(children: actions)
+        stack.addArrangedSubview(more)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func updateControl(_ selected: Bool) {
+        control.backgroundColor = selected ? tintColor.withAlphaComponent(0.25) : .clear
+        control.layer.cornerRadius = 6
+        control.accessibilityTraits = selected ? [.button, .selected] : [.button]
+    }
+}
+
 struct TerminalSurface: UIViewRepresentable {
     let model: TerminalModel
     func makeCoordinator() -> Coordinator { Coordinator(model) }
     func makeUIView(context: Context) -> TerminalView {
-        let view = TerminalView(frame: .zero, font: .monospacedSystemFont(ofSize: 13, weight: .regular))
+        let view = CompactTerminalView(frame: .zero, font: .monospacedSystemFont(ofSize: 13, weight: .regular))
         view.nativeBackgroundColor = UIColor(red: 0.035, green: 0.045, blue: 0.06, alpha: 1)
         view.nativeForegroundColor = .init(white: 0.9, alpha: 1)
+        view.installCompactKeys()
         view.terminalDelegate = context.coordinator
         model.render = { [weak view] data, width, height in
             guard let view else { return }
