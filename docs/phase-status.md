@@ -10,7 +10,14 @@ claim that every release acceptance criterion in the Astra roadmap has passed.
 | 3 · Herdr state | NDJSON API, response ID validation, snapshots, lifecycle subscription, bounded requests, agent prompts, workspace/tab creation, space rename/close, pane split/zoom/close, cached state, bounded reconnect | Real Herdr 0.9.5/protocol 22 integration, wider management UI, multi-machine connections |
 | 4 · Terminal | SwiftTerm ANSI rendering, ordered bounded frames, native keyboard, quick keys, explicit control/watch/takeover/release, resize, multiline composer | Real server control conflicts, remote scrollback gestures, mouse, image attachments, device IME/rotation tests |
 | 5 · Cloudflare/iOS | Binary WebSocket-to-SSH transport through a local socket pair, default TLS, redirect refusal, bounded messages/backpressure, Access tokens in Keychain, foreground lifecycle/network recovery, local notifications | External quick/named/Access tunnel tests, lifecycle/device soak; background SSH/push deliberately not included |
-| 6 · Publication | Public GitHub repository, MIT/license notices, privacy/security documentation, CI, signing-neutral Xcode configuration | CI results on GitHub, release signing, App Store privacy/export review, paid membership/TestFlight and device acceptance |
+| 6 · Publication | Public GitHub repository, MIT/license notices, privacy/security documentation, CI, signing-neutral Xcode configuration | Release signing, App Store privacy/export review, paid membership/TestFlight and device acceptance |
+
+## CI result
+
+[GitHub Actions run 1](https://github.com/rarce/wooloo-io/actions/runs/40004964572)
+passed all 12 tests, deterministic project generation and the full unsigned Debug
+iOS simulator build for source commit `559506e`. Runtime/visual and real-server
+acceptance checks above are still pending.
 
 ## Dependency correction found during implementation
 

@@ -4,6 +4,13 @@ Environment: Xcode 26.6, Swift 6.3.3, macOS host, iOS 26.5 SDK, iOS 17 deploymen
 
 ## Executed
 
+[GitHub Actions run 1](https://github.com/rarce/wooloo-io/actions/runs/40004964572)
+completed successfully for source commit `559506e2d8cd631e1f482c428f6ab7a984363538`:
+12 tests passed, generated Xcode project matched, and the complete unsigned Debug
+iOS simulator app build finished with **BUILD SUCCEEDED** (including app bundle,
+assets, privacy manifest and notices). The app was not launched or visually inspected.
+
+
 - SwiftPM core build for macOS.
 - SwiftPM cross-compilation of the complete core/dependency graph, including
   SwiftTerm, for `arm64-apple-ios17.0-simulator`.
@@ -50,7 +57,7 @@ CI runs the normal tests and simulator build in an unrestricted macOS runner.
 
 ## Release gates still required
 
-- Full Xcode Debug and Release simulator/device builds, visual checks on compact
+- Release simulator and Debug/Release device builds, visual checks on compact
   iPhone and iPad, rotation, accessibility and hardware/software keyboards.
 - Direct SSH against an isolated real Herdr session: snapshot/events, every remote
   action, terminal frames/input, watch/control/takeover, release, timeout/cancel,
