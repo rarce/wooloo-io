@@ -33,8 +33,10 @@ small fake Herdr response on the exec channel; it is not a real Herdr server tes
 ## Environment restrictions and alternate checks
 
 This managed execution environment denies CoreSimulator service access and Xcode's
-nested package-manifest sandbox. Consequently the ordinary full `xcodebuild` and
-simulator launch could not be completed here. Compilation caches were redirected
+nested package-manifest sandbox. Consequently the command-line `xcodebuild` and simulator launch could not
+be completed through the restricted shell. A subsequent native Xcode UI run
+installed the official iOS 26.5 runtime, successfully built and launched the app
+on iPhone 17, and opened the local demo spaces screen. Compilation caches were redirected
 to disposable `/private/tmp` directories. GitHub dependency mirrors under that
 same temporary directory were used because SwiftPM's child network access is
 restricted. Those local mirror settings are ignored and are not shipped.
@@ -68,3 +70,12 @@ CI runs the normal tests and simulator build in an unrestricted macOS runner.
   credential clearing, QR camera/photo and notification routing.
 - Review privacy manifest, App Store metadata and export compliance; choose a
   signing team only when available. No App Store upload is attempted by this repo.
+
+## Local manual-review startup
+
+The first native Xcode Run exposed a Debug architecture mismatch: the app tried
+to compile Intel simulator code while SwiftPM generated the active ARM64 variant.
+Debug now sets `ONLY_ACTIVE_ARCH = YES` in the deterministic project generator.
+Rebuilding through Xcode successfully launched Wooloo Mobile on iPhone 17 with
+iOS 26.5. The demo spaces screen was left open for manual review. Full navigation,
+terminal/keyboard, accessibility and real-server QA remain pending.

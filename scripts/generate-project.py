@@ -17,7 +17,7 @@ objects += [obj('sources',f'isa = PBXSourcesBuildPhase; buildActionMask = 214748
 for name in ['Debug','Release']:
     objects += [obj('proj'+name,f'isa = XCBuildConfiguration; name = {name}; buildSettings = {{ CLANG_ENABLE_MODULES = YES; SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 17.0; SWIFT_VERSION = 5.0; }};')]
     settings='ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = WoolooMobile/Info.plist; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = dev.wooloo.mobile.ios; PRODUCT_NAME = "Wooloo Mobile"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; IPHONEOS_DEPLOYMENT_TARGET = 17.0;'
-    settings += ' SWIFT_OPTIMIZATION_LEVEL = "-Onone"; DEBUG_INFORMATION_FORMAT = dwarf;' if name=='Debug' else ' SWIFT_OPTIMIZATION_LEVEL = "-O"; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";'
+    settings += ' ONLY_ACTIVE_ARCH = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; DEBUG_INFORMATION_FORMAT = dwarf;' if name=='Debug' else ' SWIFT_OPTIMIZATION_LEVEL = "-O"; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";'
     objects += [obj('app'+name,f'isa = XCBuildConfiguration; name = {name}; buildSettings = {{ {settings} }};')]
 for prefix in ['proj','app']:
     objects += [obj(prefix+'configs',f'isa = XCConfigurationList; buildConfigurations = ({ident(prefix+"Debug")}, {ident(prefix+"Release")}); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')]
