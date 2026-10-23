@@ -90,10 +90,15 @@ struct TerminalSurface: UIViewRepresentable {
     }
     func updateUIView(_ view: TerminalView, context: Context) {
         view.isUserInteractionEnabled = model.connected
+        if model.connected && !context.coordinator.wasConnected {
+            _ = view.becomeFirstResponder()
+        }
+        context.coordinator.wasConnected = model.connected
     }
     static func dismantleUIView(_ uiView: TerminalView, coordinator: Coordinator) { coordinator.model.render = nil }
     @MainActor final class Coordinator: NSObject, @preconcurrency TerminalViewDelegate {
         let model: TerminalModel
+        var wasConnected = false
         init(_ model: TerminalModel) { self.model = model }
         func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) { model.resize(cols: newCols, rows: newRows) }
         func send(source: TerminalView, data: ArraySlice<UInt8>) { model.input(Data(data)) }
@@ -115,8 +120,6 @@ struct PaneView: View {
     @Environment(\.scenePhase) private var phase
     let pane: Pane
     @State private var terminal = TerminalModel()
-    @State private var prompt = ""
-    @State private var sending = false
     @State private var takeover = false
     @State private var closePane = false
     var body: some View {
@@ -129,41 +132,12 @@ struct PaneView: View {
             TerminalSurface(model: terminal)
                 .accessibilityLabel("Terminal for \(pane.displayTitle)")
                 .onAppear { openTerminal() }
-            VStack(alignment: .leading, spacing: 10) {
-                Text(terminal.message).font(.caption).foregroundStyle(terminal.connected ? Color.secondary : Color.orange).lineLimit(4).textSelection(.enabled)
-                HStack(spacing: 4) {
-                    Text("Terminal keys")
-                    Spacer()
-                    Text("Swipe for more")
-                    Image(systemName: "arrow.left.and.right")
-                }.font(.caption2).foregroundStyle(.secondary)
-                ScrollView(.horizontal, showsIndicators: true) {
-                    HStack {
-                        ForEach([("esc", "\u{1b}"), ("tab", "\t"), ("⇧tab", "\u{1b}[Z"), ("^C", "\u{3}"), ("↑", "\u{1b}[A"), ("↓", "\u{1b}[B"), ("←", "\u{1b}[D"), ("→", "\u{1b}[C"), ("enter", "\r"), ("1", "1"), ("2", "2"), ("3", "3"), ("y", "y"), ("n", "n")], id: \.0) { key in
-                            Button(key.0) {
-                                if app.demo { terminal.render?(Data("\r\nDemo input: \(key.0)\r\n".utf8), nil, nil) }
-                                else { terminal.input(Data(key.1.utf8)) }
-                            }.buttonStyle(.bordered).disabled(!terminal.connected)
-                        }
-                    }.padding(.bottom, 4)
-                }
-                HStack(alignment: .bottom) {
-                    TextField("Message your agent…", text: $prompt, axis: .vertical).lineLimit(1...5).textFieldStyle(.roundedBorder)
-                    Button {
-                        let text = prompt
-                        sending = true
-                        Task {
-                            defer { sending = false }
-                            if app.demo { terminal.render?(Data("\r\nYou: \(text)\r\nDemo agent: Message received locally.\r\n".utf8), nil, nil); prompt = ""; return }
-                            guard let client = app.client else { app.error = "Reconnect before sending a prompt."; return }
-                            do { try await client.prompt(pane: pane.id, text: text); prompt = ""; await app.refresh() }
-                            catch { app.error = error.localizedDescription }
-                        }
-                    } label: { Image(systemName: sending ? "hourglass" : "arrow.up.circle.fill").font(.title) }
-                    .disabled(prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || sending)
-                    .accessibilityLabel("Send prompt")
-                }
-            }.padding(12).background(.bar)
+            if !terminal.connected {
+                Text(terminal.message)
+                    .font(.caption).foregroundStyle(.orange)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal).padding(.vertical, 8)
+            }
         }
         .navigationTitle(pane.displayAgent ?? pane.agent ?? "Terminal").navigationBarTitleDisplayMode(.inline)
         .toolbar {
